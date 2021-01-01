@@ -66,6 +66,17 @@ class NFA:
                 
         return dfa
 
+    def _eclosure(self, s):
+        res = s
+        curr = list(s)
+        while len(curr) > 0:
+            t = curr.pop(0)
+            rest = self._transitions[(t, '')]
+            for nxt in rest:
+                res.add(nxt)
+            curr.extend(rest)
+        return res
+
     def getState(self, idx):
         return self._states[idx]
 
