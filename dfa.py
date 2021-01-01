@@ -42,3 +42,12 @@ class DFA:
 
     def setTransition(self, src, wth, dst):
         self._transitions[(src,wth)] = dst
+
+    def _validMessage(self, msg):
+        res = True
+        for c in msg:
+            res = res and (c in self._alphabet)
+        return res
+
+    def _isValid(self):
+        return len(self._transitions) == (len(self._alphabet) * len(self._states))
