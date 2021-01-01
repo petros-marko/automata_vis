@@ -1,4 +1,5 @@
 from state import State
+from dfa import DFA
 
 class NFA:
     def __init__(self, alphabet = ['0','1']):
@@ -26,6 +27,44 @@ class NFA:
             if len(m) > 0:
                 curr.extend(map(lambda x: (x, m[1:]), self._transitions[(s, m[0])]))
         return False
+
+    def toDFA(self):
+        powerset = []
+        for i in range(1, (1 << len(self._states))):
+            sset = set()
+            for j in range(len(self._states)):
+                if i & (1 << j) != 0:
+                    sset.add(self._states[j])
+            powerset.append(sset)
+
+        powerset = list(map(self._eclosure, powerset))
+        #print(len(powerset))
+        #print(powerset)
+
+        alph = self._alphabet
+        alph.remove('')
+        dfa = DFA(alph)
+
+        for state in powerset[0]:
+            if state.isFinal():
+                dfa.getState(0).setFinish(True)
+
+        for i in range(1, len(powerset)):
+            dfa.addState(State())
+            for state in powerset[i]:
+                if state.isFinal():
+                    dfa.getState(i).setFinish(True)
+                    break
+
+        for i in range(len(powerset)):
+            for c in alph:
+                dstSet = set()
+                #print('setting transition for : ' + str((dfa.getState(i), c)))
+                for s in powerset[i]:
+                    dstSet = dstSet.union(self._eclosure(set(self._transitions[(s,c)])))
+                dfa.setTransition(dfa.getState(i), c, dfa.getState(powerset.index(dstSet))) 
+                
+        return dfa
 
     def getState(self, idx):
         return self._states[idx]
