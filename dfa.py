@@ -9,6 +9,21 @@ class DFA:
     def __len__(self):
         return len(self._states)
 
+    def analyze(self, message):
+        if not self._isValid():
+            print('This DFA is missing some transitions')
+            return False
+        if not self._validMessage(message):
+            print('The message has to consist of characters from the alphabet')
+            return False
+
+        return self._analyzeHelper(message, self._states[0])
+
+    def _analyzeHelper(self, msg, curr):
+        if len(msg) == 0:
+            return curr.isFinal()
+        return self._analyzeHelper(msg[1:],self._transitions[(curr, msg[0])])
+
     def getState(self, idx):
         return self._states[idx]
 
