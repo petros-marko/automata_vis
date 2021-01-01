@@ -64,6 +64,7 @@ class NFA:
                     dstSet = dstSet.union(self._eclosure(set(self._transitions[(s,c)])))
                 dfa.setTransition(dfa.getState(i), c, dfa.getState(powerset.index(dstSet))) 
                 
+        dfa.trim()
         return dfa
 
     def _eclosure(self, s):
