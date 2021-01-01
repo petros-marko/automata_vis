@@ -51,3 +51,16 @@ class DFA:
 
     def _isValid(self):
         return len(self._transitions) == (len(self._alphabet) * len(self._states))
+
+    def trim(self):
+        visited = set()
+        q = [self._states[0]]
+        while len(q) > 0:
+            front = q.pop(0)
+            visited.add(front)
+            for c in self._alphabet:
+                if self._transitions[(front, c)] not in visited:
+                    q.append(self._transitions[(front,c)])
+        not_visited = [state for state in self._states if state not in visited]
+        for unreachable in not_visited:
+            self.removeState(unreachable)
